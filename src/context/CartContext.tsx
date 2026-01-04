@@ -2,57 +2,61 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react';
 
-// 🔧 DÉFINITION DES TYPES
-interface Product {
+export interface CartItem {
   id: number;
   name: string;
-  description?: string;
   price: number;
-  image: string | null;
-  stock?: number;
   quantity: number;
+  image: string;
 }
 
 interface CartContextType {
-  cart: Product[];
-  addToCart: (product: Omit<Product, 'quantity'>) => void;
+  items: CartItem[];
+  addToCart: (item: Omit<CartItem, 'quantity'>) => void;
   removeFromCart: (id: number) => void;
   clearCart: () => void;
-  total: number;
+  updateQuantity: (id: number, quantity: number) => void;
 }
 
-// ✅ Type correct (non null)
-const CartContext = createContext<CartContextType | null>(null);
+const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [cart, setCart] = useState<Product[]>([]);
+  const [items, setItems] = useState<CartItem[]>([]);
 
-  function addToCart(product: Omit<Product, 'quantity'>) {
-    setCart((prev) => {
-      const existing = prev.find((p) => p.id === product.id);
-
+  const addToCart = (item: Omit<CartItem, 'quantity'>) => {
+    setItems(prev => {
+      const existing = prev.find(i => i.id === item.id);
       if (existing) {
-        return prev.map((p) =>
-          p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
+        return prev.map(i =>
+          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
         );
       }
-
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...item, quantity: 1 }];
     });
-  }
+  };
 
-  function removeFromCart(id: number) {
-    setCart((prev) => prev.filter((p) => p.id !== id));
-  }
+  const removeFromCart = (id: number) => {
+    setItems(prev => prev.filter(item => item.id !== id));
+  };
 
-  function clearCart() {
-    setCart([]);
-  }
+  const clearCart = () => {
+    setItems([]);
+  };
 
-  const total = cart.reduce((sum, p) => sum + p.price * p.quantity, 0);
+  const updateQuantity = (id: number, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(id);
+      return;
+    }
+    setItems(prev =>
+      prev.map(item =>
+        item.id === id ? { ...item, quantity } : item
+      )
+    );
+  };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, total }}>
+    <CartContext.Provider value={{ items, addToCart, removeFromCart, clearCart, updateQuantity }}>
       {children}
     </CartContext.Provider>
   );
