@@ -3,12 +3,7 @@
 import { useCart } from '../context/CartContext';
 
 export default function CartPage() {
-  const { items, removeFromCart, clearCart } = useCart();
-
-  const total = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const { items, removeItem, clearCart, total } = useCart();
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-12">
@@ -32,7 +27,7 @@ export default function CartPage() {
                 </div>
 
                 <button
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() => removeItem(item.id)}
                   className="text-red-600 hover:underline"
                 >
                   Supprimer
@@ -42,7 +37,7 @@ export default function CartPage() {
           </ul>
 
           <div className="mt-6 flex justify-between items-center">
-            <p className="text-xl font-bold">Total : CHF {total}</p>
+            <p className="text-xl font-bold">Total : CHF {total.toFixed(2)}</p>
 
             <button
               onClick={clearCart}
