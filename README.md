@@ -35,3 +35,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 # Force rebuild dim.  4 janv. 2026 23:51:04 CET
+# Build timestamp: dim.  4 janv. 2026 23:53:02 CET
